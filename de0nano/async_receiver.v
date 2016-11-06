@@ -11,9 +11,9 @@ module async_receiver(
 	output RxD_idle,  // asserted when no data has been received for a while
 	output reg RxD_endofpacket = 0  // asserted for one clock cycle when a packet has been detected (i.e. RxD_idle is going high)
 );
-`include "parameters.vh"
-parameter ClkFrequency = `CLK_FREQUENCY;
-parameter Baud = `BAUD_RATE;
+`include "parameters.h"
+parameter ClkFrequency = CLK_FREQUENCY;
+parameter Baud = 460800;//BAUD_RATE;
 
 parameter Oversampling = 16;//8;  // needs to be a power of 2
 // we oversample the RxD line at a fixed rate to capture each RxD data bit at the "right" time

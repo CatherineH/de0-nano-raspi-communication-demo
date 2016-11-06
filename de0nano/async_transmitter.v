@@ -18,13 +18,13 @@ module async_transmitter(
 	output TxD_busy
 );
 
-`include "parameters.vh"
+`include "parameters.h"
 
 // Assert TxD_start for (at least) one clock cycle to start transmission of TxD_data
 // TxD_data is latched so that it doesn't have to stay valid while it is being sent
 
-parameter ClkFrequency = `CLK_FREQUENCY;
-parameter Baud = `BAUD_RATE;
+parameter ClkFrequency = CLK_FREQUENCY;
+parameter Baud = 460800;//BAUD_RATE;
 
 ////////////////////////////////
 `ifdef SIMULATION

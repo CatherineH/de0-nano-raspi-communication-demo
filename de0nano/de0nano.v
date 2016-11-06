@@ -5,7 +5,7 @@ module de0nano(
     output TxD,
     output [7:0] LED
 );
-`include "parameters.vh"
+`include "parameters.h"
 parameter VALUE = 42435;
 wire RxD_data_ready;
 reg TxD_data_ready;
@@ -13,7 +13,7 @@ wire [7:0] RxD_data;
 reg [7:0] TxD_data;
 wire TxD_busy;
 reg [2:0] TxD_state;
-assign LED = {data, dimension};//{data[5:0], TxD, RxD};
+assign LED = {RxD_data, dimension, RxD_data_ready};
 
 // data
 reg [2:0] dimension;
@@ -24,7 +24,6 @@ always @(posedge (TxD_busy | RxD_data_ready))
     if(TxD_state == 0)
         begin
             TxD_state = 1;
-
             if(RxD_data == 120)
                 dimension = 0;
             else if(RxD_data == 121)
@@ -42,18 +41,18 @@ always @(TxD_state)
         if(TxD_state == 1)
             begin
                 TxD_data_ready = 1'b1;
-                TxD_data <= 118;
+                TxD_data <= 0;//data[7:0];
             end
 
         else if(TxD_state == 2)
             begin
                 TxD_data_ready = 1'b1;
-                //TxD_data <= data[7:0];
+                TxD_data <= data[7:0];
             end
         else if(TxD_state == 3)
             begin
                 TxD_data_ready = 1'b1;
-                //TxD_data <= data[15:8];
+                TxD_data <= data[15:8];
             end
         else if(TxD_state == 4)
             begin
