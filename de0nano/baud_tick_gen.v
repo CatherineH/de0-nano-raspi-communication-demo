@@ -2,8 +2,7 @@ module baud_tick_gen(
 	input clk, enable,
 	output tick  // generate a tick at the specified baud rate * oversampling
 );
-`include "parameters.h"
-parameter ClkFrequency = CLK_FREQUENCY;
+parameter ClkFrequency = 50000000;
 parameter Baud = 460800;//BAUD_RATE;
 parameter Oversampling = 1;
 

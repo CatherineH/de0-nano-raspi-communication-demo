@@ -11,19 +11,13 @@ module async_receiver(
 	output RxD_idle,  // asserted when no data has been received for a while
 	output reg RxD_endofpacket = 0  // asserted for one clock cycle when a packet has been detected (i.e. RxD_idle is going high)
 );
-`include "parameters.h"
-parameter ClkFrequency = CLK_FREQUENCY;
-parameter Baud = 460800;//BAUD_RATE;
-
-parameter Oversampling = 16;//8;  // needs to be a power of 2
-// we oversample the RxD line at a fixed rate to capture each RxD data bit at the "right" time
-// 8 times oversampling by default, use 16 for higher quality reception
-////////////////////////////////
 reg [3:0] RxD_state = 0;
-
+parameter Oversampling = 1;
 wire OversamplingTick;
-baud_tick_gen #(ClkFrequency, Baud, Oversampling) tickgen(.clk(clk),
-.enable(1'b1), .tick(OversamplingTick));
+//baud_tick_gen #(Oversampling) tickgen(.clk(clk), .enable(1'b1),
+//                                       .tick(OversamplingTick));
+baud_tick_gen tickgen(.clk(clk), .enable(1'b1), .tick(OversamplingTick));
+
 
 // synchronize RxD to our clk domain
 reg [1:0] RxD_sync = 2'b11;
@@ -63,7 +57,7 @@ reg [l2o-2:0] OversamplingCnt = 0;
 always @(posedge clk)
     if(OversamplingTick)
         OversamplingCnt <= (RxD_state==0) ? 1'd0 : OversamplingCnt + 1'd1;
-wire sampleNow = OversamplingTick && (OversamplingCnt==Oversampling/2-1);
+wire sampleNow = OversamplingTick;// && (OversamplingCnt==Oversampling/2-1);
 
 
 // now we can accumulate the RxD bits in a shift-register
@@ -89,7 +83,8 @@ always @(posedge clk)
 //reg RxD_data_error = 0;
 always @(posedge clk)
     begin
-        RxD_data_ready <= (sampleNow && RxD_state==4'b0010 && RxD_bit);  // make sure a stop bit is received
+        RxD_data_ready <= (sampleNow && RxD_state==4'b0010);// && RxD_bit);
+        //  make sure a stop bit is received
     end
 
 

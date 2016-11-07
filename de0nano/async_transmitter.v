@@ -18,21 +18,16 @@ module async_transmitter(
 	output TxD_busy
 );
 
-`include "parameters.h"
 
 // Assert TxD_start for (at least) one clock cycle to start transmission of TxD_data
 // TxD_data is latched so that it doesn't have to stay valid while it is being sent
-
-parameter ClkFrequency = CLK_FREQUENCY;
-parameter Baud = 460800;//BAUD_RATE;
 
 ////////////////////////////////
 `ifdef SIMULATION
 wire BitTick = 1'b1;  // output one bit per clock cycle
 `else
 wire BitTick;
-baud_tick_gen #(ClkFrequency, Baud) tickgen(.clk(clk), .enable(TxD_busy),
-.tick(BitTick));
+baud_tick_gen tickgen(.clk(clk), .enable(TxD_busy), .tick(BitTick));
 `endif
 
 reg [3:0] TxD_state = 0;
