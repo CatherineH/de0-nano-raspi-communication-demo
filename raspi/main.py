@@ -1,17 +1,34 @@
-from time import sleep
-
+from time import sleep, time
+from sys import argv
 from serial import Serial
-conn = Serial('/dev/ttyAMA0', baudrate=460800, timeout=2)
+
+rate = argv[1]
+if rate != 0 and rate != 1:
+    rate = 0
+
+rates = [460800, 115200]
+
+print("setting rate to: ", rates[rate])
+
+conn = Serial('/dev/ttyAMA0', baudrate=rates[rate], timeout=2)
+
+def read_dimension(dimension):
+    global conn
+    failure_count = 0
+    while True:
+        try:
+            conn.write(dimension)
+            value = ord(conn.read(1))
+            value += ord(conn.read(1)) << 8
+            return value
+        except Exception as e:
+            failure_count += 1
+
 while True:
-    conn.write(b'x')
-    x_val = ord(conn.read(1))
-    x_val += ord(conn.read(1)) << 8
-    sleep(1)
-    conn.write(b'y')
-    y_val = ord(conn.read(1))
-    y_val += ord(conn.read(1)) << 8
-    sleep(1)
-    conn.write(b'z')
-    z_val = ord(conn.read(1))
-    z_val += ord(conn.read(1)) << 8
-    print(x_val, y_val, z_val)
+    start = time()
+    x_val = read_dimension(b'x')
+    y_val = read_dimension(b'y')
+    z_val = read_dimension(b'z')
+    print(x_val, y_val, z_val, time()-start)
+    conn.close()
+    conn.open()
