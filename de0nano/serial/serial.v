@@ -1,4 +1,4 @@
-module de0nano(
+module serial(
     input CLK_50,
     input RxD,
     input KEY,
