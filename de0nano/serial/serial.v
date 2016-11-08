@@ -47,12 +47,12 @@ always @(TxD_state)
         else if(TxD_state == 2)
             begin
                 TxD_data_ready = 1'b1;
-                TxD_data <= RxD_data;//data[7:0];
+                TxD_data <= data[7:0];
             end
         else if(TxD_state == 3)
             begin
                 TxD_data_ready = 1'b1;
-                TxD_data <= RxD_data;//data[15:8];
+                TxD_data <= data[15:8];
             end
         else if(TxD_state == 4)
             begin

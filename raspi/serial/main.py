@@ -12,6 +12,7 @@ print("setting rate to: ", rates[rate])
 
 conn = Serial('/dev/ttyAMA0', baudrate=rates[rate], timeout=2)
 
+
 def read_dimension(dimension):
     global conn
     failure_count = 0

@@ -1,6 +1,7 @@
 module parallel(
     input CLK_50,
-    inout [9:0] RP,
+    input [1:0] RP
+    inout [9:2] RP,
     input KEY,
     output [7:0] LED
 );
@@ -8,8 +9,35 @@ module parallel(
 // data
 reg [2:0] dimension;
 wire [15:0] data;
+reg [7:0] data_in;
+reg [7:0] data_out;
+reg [1:0] write_state;
 
-parallel_txrx parallel_txrx(.clock(RP[0]), .chip_select(RP[1]), .data(RP[9:2]));
+always @(posedge RP[0])
+    if (write_state == 0)
+        begin
+            if(data_in == 120)
+                dimension = 0;
+            else if(data_in == 121)
+                dimension = 1;
+            else if(data_in == 122)
+                dimension = 2;
+            write_state = 1;
+        end
+    else if (write_state == 1)
+        begin
+            data_out <= data[7:0];
+            write_state = 2;
+        end
+    else if (write_state == 2)
+        begin
+            data_out <= data[15:8];
+            write_state = 0;
+        end
+
+parallel_txrx parallel_txrx(.clock(RP[0]), .chip_select(RP[1]),
+                            .data_pins(RP[9:2]), .data_in(data_in),
+                            .data_out(data_out));
 
 //  PLL
 spipll spipll(
