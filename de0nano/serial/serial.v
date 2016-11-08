@@ -71,7 +71,7 @@ async_transmitter TX(.clk(CLK_50), .TxD(TxD), .TxD_start(TxD_data_ready),
 
 
 //  PLL
-spipll u_spipll	(
+spipll spipll(
             .areset(dly_rst),
             .inclk0(CLK_50),
             .c0(spi_clk),      // 2MHz
