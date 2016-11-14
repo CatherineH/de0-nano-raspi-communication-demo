@@ -18,8 +18,8 @@ wire [7:0] data_in;
 reg [7:0] data_out;
 reg [1:0] write_state;
 
-assign LED = data_out;
-
+assign LED = {RP_data, RP_CS, RP_clock};
+/*
 always @(posedge RP_clock)
     if (write_state == 0)
         begin
@@ -65,5 +65,5 @@ spi_ee_config spi_ee_config (
 						.SPI_SDIO(ACC_DATA),
 						.oSPI_CSN(ACC_SELECT),
 						.oSPI_CLK(ACC_CLK));
-
+*/
 endmodule
