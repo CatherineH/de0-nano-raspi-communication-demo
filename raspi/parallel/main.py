@@ -3,13 +3,13 @@
 import RPi.GPIO as GPIO
 from time import time
 
-GPIO.setmode(GPIO.BOARD)
-clock_pin = 2
-chip_select = 3
+GPIO.setmode(GPIO.BCM)
+clock_pin = 1
+chip_select = 0
 
-data_pins = [4, 5, 6, 17, 27, 22, 10, 9]
-GPIO.setmode(clock_pin, GPIO.OUT)
-GPIO.setmode(chip_select, GPIO.OUT)
+data_pins = [4, 17, 21, 22, 14, 15, 18, 23]
+GPIO.setup(clock_pin, GPIO.OUT)
+GPIO.setup(chip_select, GPIO.OUT)
 
 
 def read_dimension(dimension):
@@ -28,17 +28,15 @@ def read_dimension(dimension):
     GPIO.output(clock_pin, 1)
     GPIO.output(clock_pin, 0)
     GPIO.setup(data_pins, GPIO.IN)
-    values = GPIO.input(data_pins)
     value = 0
     for i in range(0, 8):
-        value += values[i] << i
+        value += GPIO.input(data_pins[i]) << i
     # do it twice
     GPIO.output(clock_pin, 1)
     GPIO.output(clock_pin, 0)
     GPIO.setup(data_pins, GPIO.IN)
-    values = GPIO.input(data_pins)
     for i in range(0, 8):
-        value += values[i] << (i+8)
+        value += GPIO.input(data_pins[i]) << (i+8)
     return value
 
 
