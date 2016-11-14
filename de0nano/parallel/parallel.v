@@ -18,7 +18,7 @@ wire [7:0] data_in;
 reg [7:0] data_out;
 reg [1:0] write_state;
 
-assign LED = {RP_data};
+assign LED = {RP_data[5:0], RP_clock, RP_CS};
 /*
 always @(posedge RP_clock)
     if (write_state == 0)

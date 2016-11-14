@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 GPIO.setmode(GPIO.BCM)
-data_clock = 21
+data_clock = 14
 data_select = 10
 data_pins = [24, 4, 17, 22, 9, 25, 18, 23]
 
@@ -10,6 +10,7 @@ GPIO.setup(data_clock, GPIO.OUT)
 GPIO.setup(data_select, GPIO.OUT)
 
 for i in range(len(data_pins)):
+    print("initializing pin: ", data_pins[i])
     GPIO.setup(data_pins[i], GPIO.OUT)
 
 i = 0
