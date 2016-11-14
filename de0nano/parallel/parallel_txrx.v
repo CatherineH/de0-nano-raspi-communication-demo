@@ -2,8 +2,8 @@ module parallel_txrx(
     input clock,
     input chip_select,
     inout [7:0] data_pins,
-    input [7:0] data_in,
-    output reg [7:0] data_out
+    output reg [7:0] data_in,
+    input [7:0] data_out
 );
 
 reg [7:0] data_out_internal;

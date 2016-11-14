@@ -13,7 +13,7 @@ quartus project, or use my [pyquartus tool](https://github
 
 ```
 cd de0-nano-raspi-serial-demo
-pyquartus -c -u -p de0nano/serial
+pyquartus -c -u -i de0nano/common -p de0nano/serial
 ```
 
 On the raspberry pi side, install the requirements and run the program:
@@ -42,7 +42,7 @@ quartus project, or use my [pyquartus tool](https://github
 
 ```
 cd de0-nano-raspi-serial-demo
-pyquartus -c -u -p de0nano/parallel
+pyquartus -c -u -i de0nano/common -p de0nano/parallel
 ```
 
 On the raspberry pi side, install the requirements and run the program:

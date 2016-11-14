@@ -3,7 +3,11 @@ module serial(
     input RxD,
     input KEY,
     output TxD,
-    output [7:0] LED
+    output [7:0] LED,
+    output ACC_CLK,
+	inout ACC_DATA,
+    output ACC_SELECT,
+    input ACC_INTERRUPT
 );
 `include "parameters.h"
 parameter VALUE = 42435;
