@@ -3,7 +3,7 @@ from time import sleep
 
 GPIO.setmode(GPIO.BCM)
 
-data_pins = [4, 17, 21, 22, 9, 25, 18, 23, 24, 10]
+data_pins = [24, 4, 17, 21, 22, 9, 25, 18, 23,  10]
 
 for i in range(len(data_pins)):
     GPIO.setup(data_pins[i], GPIO.OUT)
