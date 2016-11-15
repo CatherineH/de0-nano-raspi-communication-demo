@@ -1,4 +1,4 @@
-from time import sleep, time
+from time import time
 from sys import argv
 from serial import Serial
 
@@ -16,6 +16,7 @@ conn = Serial('/dev/ttyAMA0', baudrate=rates[rate], timeout=2)
 def read_dimension(dimension):
     global conn
     failure_count = 0
+    # the serial connection often fails to read two single bytes
     while True:
         try:
             conn.write(dimension)
@@ -31,5 +32,3 @@ while True:
     y_val = read_dimension(b'y')
     z_val = read_dimension(b'z')
     print(x_val, y_val, z_val, time()-start)
-    conn.close()
-    conn.open()

@@ -20,7 +20,7 @@ reg [2:0] TxD_state;
 assign LED = {RxD_data, dimension, RxD_data_ready, TxD_busy};
 
 // data
-reg [2:0] dimension;
+reg [1:0] dimension;
 wire [15:0] data;
 
 
@@ -35,7 +35,7 @@ always @(posedge (TxD_busy | RxD_data_ready))
             else if(RxD_data == 122)
                 dimension = 2;
         end
-    else if(TxD_state == 4)
+    else if(TxD_state == 3)
         TxD_state = 0;
     else
         TxD_state = TxD_state + 1;
@@ -45,20 +45,15 @@ always @(TxD_state)
         if(TxD_state == 1)
             begin
                 TxD_data_ready = 1'b1;
-                TxD_data <= 0;//data[7:0];
+                TxD_data <= data[7:0];
             end
 
         else if(TxD_state == 2)
             begin
                 TxD_data_ready = 1'b1;
-                TxD_data <= data[7:0];
+                TxD_data <= data[15:0];
             end
         else if(TxD_state == 3)
-            begin
-                TxD_data_ready = 1'b1;
-                TxD_data <= data[15:8];
-            end
-        else if(TxD_state == 4)
             begin
                 TxD_data_ready = 1'b0;
             end

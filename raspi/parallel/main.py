@@ -67,11 +67,8 @@ def acc():
     while True:
         start = time()
         x_val = read_dimension(b'x')
-        sleep(0.1)
         y_val = read_dimension(b'y')
-        sleep(0.1)
         z_val = read_dimension(b'z')
-        sleep(0.1)
         print(x_val, y_val, z_val, time()-start)
 
 if __name__ == "__main__":

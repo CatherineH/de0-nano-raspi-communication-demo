@@ -12,22 +12,16 @@ module parallel(
     output [2:0] OUT
 );
 
-// data
 reg [1:0] dimension;
-reg part;
-//reg [15:0] data;
 wire [15:0] data;
+reg [15:0] data_internal;
 wire [7:0] data_in;
 reg [7:0] data_out;
 reg [1:0] write_state;
-wire	        dly_rst;
-wire	        spi_clk, spi_clk_out;
+wire dly_rst;
+wire spi_clk, spi_clk_out;
 
-assign LED = {data};
-
-assign OUT[0] = RP_clock;
-assign OUT[1] = RP_CS;
-assign OUT[2] = RP_data[0];
+assign LED = {data_internal};
 
 always @(posedge RP_clock)
     if (write_state == 0)
@@ -35,49 +29,28 @@ always @(posedge RP_clock)
             if(data_in == 120)
                 begin
                     write_state = 1;
-                    part = 0;
                     dimension = 0;
                 end
             else if(data_in == 121)
                 begin
                     write_state = 1;
-                    part = 0;
                     dimension = 1;
                 end
             else if(data_in == 122)
                 begin
                     write_state = 1;
-                    part = 0;
-                    dimension = 2;
-                end
-            else if(data_in == 88)
-                begin
-                    write_state = 1;
-                    part = 1;
-                    dimension = 0;
-                end
-            else if(data_in == 89)
-                begin
-                    write_state = 1;
-                    part = 1;
-                    dimension = 1;
-                end
-            else if(data_in == 90)
-                begin
-                    write_state = 1;
-                    part = 1;
                     dimension = 2;
                 end
         end
     else if (write_state == 1)
         begin
-            //data_out <= part ? data[7:0] : data[15:8];
-            data_out <= 100;//data[7:0];
+            data_internal <= data;
+            data_out <= data_internal[7:0];
             write_state = 2;
         end
     else if (write_state == 2)
         begin
-            data_out <= 200;//data[15:8];
+            data_out <= data_internal[15:8];
             write_state = 0;
         end
 
