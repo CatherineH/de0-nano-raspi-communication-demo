@@ -25,16 +25,19 @@ def send_byte(byte_out):
     GPIO.output(clock_pin, 1)
     GPIO.output(clock_pin, 0)   
 
+
 def get_byte():
+    GPIO.setup(data_pins, GPIO.IN)
     # read the data pins
     GPIO.output(chip_select, 0)
     GPIO.output(clock_pin, 1)
     GPIO.output(clock_pin, 0)
-    GPIO.setup(data_pins, GPIO.IN)
+
     value = 0
     for i in range(0, 8):
         value += GPIO.input(data_pins[i]) << i
     return value
+
 
 def read_dimension(dimension):
     # first, set the dimension (x, y, z)
@@ -44,6 +47,7 @@ def read_dimension(dimension):
     second_byte = get_byte()
     #print(first_byte, second_byte)
     return first_byte + second_byte << 8
+
 
 def echo_box():
     byte_out = 0
@@ -57,6 +61,7 @@ def echo_box():
         diff = byte_out-byte_in
         end = time()
         print("diff: ", diff, start-end)
+
 
 def acc():
     while True:
