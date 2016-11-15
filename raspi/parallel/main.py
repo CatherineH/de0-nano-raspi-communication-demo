@@ -32,7 +32,7 @@ def get_byte():
     GPIO.output(chip_select, 0)
     GPIO.output(clock_pin, 1)
     GPIO.output(clock_pin, 0)
-
+    #sleep(0.01)
     value = 0
     for i in range(0, 8):
         value += GPIO.input(data_pins[i]) << i
@@ -45,7 +45,7 @@ def read_dimension(dimension):
     first_byte = get_byte()
     #send_byte(dimension.upper())
     second_byte = get_byte()
-    print(first_byte, second_byte)
+    #print(first_byte, second_byte)
     return first_byte + second_byte << 8
 
 
@@ -68,11 +68,12 @@ def acc():
         start = time()
         x_val = read_dimension(b'x')
         sleep(0.1)
-        y_val = read_dimension(b'y')
-        sleep(0.1)
-        z_val = read_dimension(b'z')
-        sleep(0.1)
-        print(x_val, y_val, z_val, time()-start)
+        #y_val = read_dimension(b'y')
+        #sleep(0.1)
+        #z_val = read_dimension(b'z')
+        #sleep(0.1)
+        print(x_val)
+        #print(x_val, y_val, z_val, time()-start)
 
 if __name__ == "__main__":
     acc()
