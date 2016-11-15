@@ -40,9 +40,9 @@ def read_dimension(dimension):
     # first, set the dimension (x, y, z)
     send_byte(dimension)
     first_byte = get_byte()
-    send_byte(dimension.upper())
+    #send_byte(dimension.upper())
     second_byte = get_byte()
-    #print(first_byte, second_byte)
+    print(first_byte, second_byte)
     return first_byte + second_byte << 8
 
 def echo_box():
