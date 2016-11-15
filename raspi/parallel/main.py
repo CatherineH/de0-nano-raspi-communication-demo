@@ -1,7 +1,7 @@
 # high chip select means writing, low means reading
 # clock is negative edged
 import RPi.GPIO as GPIO
-from time import time, sleep
+from time import time
 
 GPIO.setmode(GPIO.BCM)
 
@@ -14,6 +14,9 @@ GPIO.setup(chip_select, GPIO.OUT)
 
 
 def send_byte(byte_out):
+    """
+    Send a single byte.
+    """
     GPIO.output(clock_pin, 0)
     # set the chip select to write
     GPIO.output(chip_select, 1)
@@ -27,12 +30,14 @@ def send_byte(byte_out):
 
 
 def get_byte():
+    """
+    Get a single byte.
+    """
     GPIO.setup(data_pins, GPIO.IN)
     # read the data pins
     GPIO.output(chip_select, 0)
     GPIO.output(clock_pin, 1)
     GPIO.output(clock_pin, 0)
-
     value = 0
     for i in range(0, 8):
         value += GPIO.input(data_pins[i]) << i
@@ -43,27 +48,11 @@ def read_dimension(dimension):
     # first, set the dimension (x, y, z)
     send_byte(dimension)
     first_byte = get_byte()
-    send_byte(dimension.upper())
     second_byte = get_byte()
-    #print(first_byte, second_byte)
-    return first_byte + second_byte << 8
+    return first_byte + (second_byte << 8)
 
 
-def echo_box():
-    byte_out = 0
-    while True:
-        start = time()
-        send_byte(chr(byte_out))
-        byte_out += 1
-        if byte_out > 255:
-            byte_out = 0
-        byte_in = get_byte()
-        diff = byte_out-byte_in
-        end = time()
-        print("diff: ", diff, start-end)
-
-
-def acc():
+if __name__ == "__main__":
     while True:
         start = time()
         x_val = read_dimension(b'x')
@@ -71,5 +60,3 @@ def acc():
         z_val = read_dimension(b'z')
         print(x_val, y_val, z_val, time()-start)
 
-if __name__ == "__main__":
-    acc()

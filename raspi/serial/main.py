@@ -26,9 +26,10 @@ def read_dimension(dimension):
         except Exception as e:
             failure_count += 1
 
-while True:
-    start = time()
-    x_val = read_dimension(b'x')
-    y_val = read_dimension(b'y')
-    z_val = read_dimension(b'z')
-    print(x_val, y_val, z_val, time()-start)
+if __name__ == "__main__":
+    while True:
+        start = time()
+        x_val = read_dimension(b'x')
+        y_val = read_dimension(b'y')
+        z_val = read_dimension(b'z')
+        print(x_val, y_val, z_val, time()-start)
