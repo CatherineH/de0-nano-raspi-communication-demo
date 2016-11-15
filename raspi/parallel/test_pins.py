@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 GPIO.setmode(GPIO.BCM)
-data_clock = 14
+data_clock = 8
 data_select = 10
 data_pins = [24, 4, 17, 22, 9, 25, 18, 23]
 

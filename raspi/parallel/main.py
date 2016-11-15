@@ -4,10 +4,11 @@ import RPi.GPIO as GPIO
 from time import time
 
 GPIO.setmode(GPIO.BCM)
-clock_pin = 1
-chip_select = 0
 
-data_pins = [4, 17, 21, 22, 14, 15, 18, 23]
+data_pins = [24, 4, 17, 22, 9, 25, 18, 23]
+clock_pin = 8
+chip_select = 10
+
 GPIO.setup(clock_pin, GPIO.OUT)
 GPIO.setup(chip_select, GPIO.OUT)
 
