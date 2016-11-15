@@ -31,8 +31,9 @@ reg     [3:0]          clear_status_d;
 reg                    high_byte_d, read_back_d;
 reg	    [IDLE_MSB:0]   read_idle_count; // reducing the reading rate
 
-wire [6:0] LB = (dimension==0) ? X_LB: ((dimension==1) ? Y_LB: Z_LB);
-wire [6:0] HB = (dimension==0) ? X_HB: ((dimension==1) ? Y_HB: Z_HB);
+wire[5:0] LB = (dimension==0) ? X_LB: ((dimension==1) ? Y_LB: Z_LB);
+wire[5:0] HB = (dimension==0) ? X_HB: ((dimension==1) ? Y_HB: Z_HB);
+
 
 //=======================================================
 //  Sub-module
@@ -69,109 +70,106 @@ always @ (ini_index)
 	endcase
 
 always@(posedge iSPI_CLK or negedge iRSTN)
-    if(!iRSTN)
-        begin
-            ini_index	<= 4'b0;
-            spi_go		<= 1'b0;
-            spi_state	<= IDLE;
-            read_idle_count <= 0; // read mode only
-            high_byte <= 1'b0; // read mode only
-            read_back <= 1'b0; // read mode only
-            clear_status <= 1'b0;
-        end
-    // initial setting (write mode)
-    else if(ini_index < INI_NUMBER)
-        case(spi_state)
-            IDLE :
-            begin
-                p2s_data  <= {WRITE_MODE, write_data};
-                spi_go		<= 1'b1;
-                spi_state	<= TRANSFER;
-            end
-            TRANSFER :
-            begin
-            if (spi_end)
-                begin
-                    ini_index	<= ini_index + 4'b1;
-                    spi_go		<= 1'b0;
-                    spi_state	<= IDLE;
-                end
-            end
-        endcase
-    // read data and clear interrupt (read mode)
-    else
-        case(spi_state)
-            IDLE :
-            begin
-                read_idle_count <= read_idle_count + 1;
-                if (high_byte) // multiple-byte read
-                    begin
-                        p2s_data[15:8] <= {READ_MODE, HB};
-                        read_back      <= 1'b1;
-                    end
-                else if (read_ready)
-                    begin
-                        p2s_data[15:8] <= {READ_MODE, LB};
-                        read_back      <= 1'b1;
-                    end
-                else if (!clear_status_d[3]&&iG_INT2 || read_idle_count[IDLE_MSB])
-                    begin
-                        p2s_data[15:8] <= {READ_MODE, INT_SOURCE};
-                        clear_status   <= 1'b1;
-                    end
+	if(!iRSTN)
+	begin
+		ini_index	<= 4'b0;
+		spi_go		<= 1'b0;
+		spi_state	<= IDLE;
+		read_idle_count <= 0; // read mode only
+		high_byte <= 1'b0; // read mode only
+		read_back <= 1'b0; // read mode only
+    clear_status <= 1'b0;
+	end
+	// initial setting (write mode)
+	else if(ini_index < INI_NUMBER)
+		case(spi_state)
+			IDLE : begin
+					p2s_data  <= {WRITE_MODE, write_data};
+					spi_go		<= 1'b1;
+					spi_state	<= TRANSFER;
+			end
+			TRANSFER : begin
+					if (spi_end)
+					begin
+		        ini_index	<= ini_index + 4'b1;
+						spi_go		<= 1'b0;
+						spi_state	<= IDLE;
+					end
+			end
+		endcase
+  // read data and clear interrupt (read mode)
+  else
+		case(spi_state)
+			IDLE : begin
+				  read_idle_count <= read_idle_count + 1;
 
-                if (high_byte || read_ready || read_idle_count[IDLE_MSB] || !clear_status_d[3]&&iG_INT2)
-                    begin
-                        spi_go		<= 1'b1;
-                        spi_state	<= TRANSFER;
-                    end
+					if (high_byte) // multiple-byte read
+				  begin
+					  p2s_data[15:8] <= {READ_MODE, HB};
+					  read_back      <= 1'b1;
+					end
+				  else if (read_ready)
+				  begin
+					  p2s_data[15:8] <= {READ_MODE, LB};
+					  read_back      <= 1'b1;
+					end
+				  else if (!clear_status_d[3]&&iG_INT2 || read_idle_count[IDLE_MSB])
+				  begin
+					  p2s_data[15:8] <= {READ_MODE, INT_SOURCE};
+					  clear_status   <= 1'b1;
+          end
 
-                if (read_back_d) // update the read back data
-                begin
-                    if (high_byte_d)
-                        begin
-                            oDATA_H <= s2p_data;
-                            oDATA_L <= low_byte_data;
-                        end
-                    else
-                        low_byte_data <= s2p_data;
-                end
-            end
-            TRANSFER :
-            begin
-                if (spi_end)
-                    begin
-                        spi_go		<= 1'b0;
-                        spi_state	<= IDLE;
+          if (high_byte || read_ready || read_idle_count[IDLE_MSB] || !clear_status_d[3]&&iG_INT2)
+          begin
+					  spi_go		<= 1'b1;
+					  spi_state	<= TRANSFER;
+					end
 
-                        if (read_back)
-                            begin
-                                read_back <= 1'b0;
-                                high_byte <= !high_byte;
-                                read_ready <= 1'b0;
-                            end
-                        else
-                            begin
-                                clear_status <= 1'b0;
-                                read_ready <= s2p_data[6];
-                                read_idle_count <= 0;
-                            end
-                    end
+				  if (read_back_d) // update the read back data
+				  begin
+				  	if (high_byte_d)
+				  	begin
+				  	  oDATA_H <= s2p_data;
+				  	  oDATA_L <= low_byte_data;
+				  	end
+				  	else
+				  		low_byte_data <= s2p_data;
+				  end
+			end
+			TRANSFER : begin
+					if (spi_end)
+					begin
+						spi_go		<= 1'b0;
+						spi_state	<= IDLE;
+
+						if (read_back)
+						begin
+							read_back <= 1'b0;
+					    high_byte <= !high_byte;
+					    read_ready <= 1'b0;
+					  end
+					  else
+					  begin
+              clear_status <= 1'b0;
+              read_ready <= s2p_data[6];
+					    read_idle_count <= 0;
             end
-        endcase
+					end
+			end
+		endcase
 
 always@(posedge iSPI_CLK or negedge iRSTN)
 	if(!iRSTN)
-        begin
-            high_byte_d <= 1'b0;
-            read_back_d <= 1'b0;
-            clear_status_d <= 4'b0;
-        end
+	begin
+		high_byte_d <= 1'b0;
+		read_back_d <= 1'b0;
+		clear_status_d <= 4'b0;
+	end
 	else
-        begin
-            high_byte_d <= high_byte;
-            read_back_d <= read_back;
-            clear_status_d <= {clear_status_d[2:0], clear_status};
-        end
+	begin
+		high_byte_d <= high_byte;
+		read_back_d <= read_back;
+		clear_status_d <= {clear_status_d[2:0], clear_status};
+	end
 
-endmodule					
+endmodule

@@ -14,4 +14,8 @@ set_location_assignment PIN_F1 -to ACC_DATA
 set_location_assignment PIN_G5 -to ACC_SELECT
 set_location_assignment PIN_M2 -to ACC_INTERRUPT
 
+set_location_assignment PIN_B12 -to OUT[0]
+set_location_assignment PIN_D12 -to OUT[1]
+set_location_assignment PIN_D11 -to OUT[2]
+
 set_location_assignment PIN_J15 -to KEY

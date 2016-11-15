@@ -8,37 +8,76 @@ module parallel(
     output ACC_CLK,
 	inout ACC_DATA,
     output ACC_SELECT,
-    input ACC_INTERRUPT
+    input ACC_INTERRUPT,
+    output [2:0] OUT
 );
 
 // data
-reg [2:0] dimension;
+reg [1:0] dimension;
+reg part;
+//reg [15:0] data;
 wire [15:0] data;
 wire [7:0] data_in;
 reg [7:0] data_out;
 reg [1:0] write_state;
+wire	        dly_rst;
+wire	        spi_clk, spi_clk_out;
 
-assign LED = {RP_data[5:0], RP_clock, RP_CS};
-/*
+assign LED = {data};
+
+assign OUT[0] = RP_clock;
+assign OUT[1] = RP_CS;
+assign OUT[2] = RP_data[0];
+
 always @(posedge RP_clock)
     if (write_state == 0)
         begin
             if(data_in == 120)
-                dimension = 0;
+                begin
+                    write_state = 1;
+                    part = 0;
+                    dimension = 0;
+                end
             else if(data_in == 121)
-                dimension = 1;
+                begin
+                    write_state = 1;
+                    part = 0;
+                    dimension = 1;
+                end
             else if(data_in == 122)
-                dimension = 2;
-            write_state = 1;
+                begin
+                    write_state = 1;
+                    part = 0;
+                    dimension = 2;
+                end
+            else if(data_in == 88)
+                begin
+                    write_state = 1;
+                    part = 1;
+                    dimension = 0;
+                end
+            else if(data_in == 89)
+                begin
+                    write_state = 1;
+                    part = 1;
+                    dimension = 1;
+                end
+            else if(data_in == 90)
+                begin
+                    write_state = 1;
+                    part = 1;
+                    dimension = 2;
+                end
         end
     else if (write_state == 1)
         begin
-            data_out <= data[7:0];
+            //data_out <= part ? data[7:0] : data[15:8];
+            data_out <= 100;//data[7:0];
             write_state = 2;
         end
     else if (write_state == 2)
         begin
-            data_out <= data[15:8];
+            data_out <= 200;//data[15:8];
             write_state = 0;
         end
 
@@ -46,6 +85,11 @@ parallel_txrx parallel_txrx(.clock(RP_clock), .chip_select(RP_CS),
                             .data_pins(RP_data), .data_in(data_in),
                             .data_out(data_out));
 
+
+reset_delay	reset_delay	(
+            .iRSTN(KEY),
+            .iCLK(CLK_50),
+            .oRST(dly_rst));
 //  PLL
 spipll spipll(
             .areset(dly_rst),
@@ -65,5 +109,5 @@ spi_ee_config spi_ee_config (
 						.SPI_SDIO(ACC_DATA),
 						.oSPI_CSN(ACC_SELECT),
 						.oSPI_CLK(ACC_CLK));
-*/
+
 endmodule
