@@ -26,21 +26,14 @@ assign LED = {data_internal};
 always @(posedge RP_clock)
     if (write_state == 0)
         begin
+            if(120 <= data_in <= 122)
+                write_state = 1;
             if(data_in == 120)
-                begin
-                    write_state = 1;
-                    dimension = 0;
-                end
+                dimension = 0;
             else if(data_in == 121)
-                begin
-                    write_state = 1;
-                    dimension = 1;
-                end
+                dimension = 1;
             else if(data_in == 122)
-                begin
-                    write_state = 1;
-                    dimension = 2;
-                end
+                dimension = 2;
         end
     else if (write_state == 1)
         begin
@@ -53,6 +46,7 @@ always @(posedge RP_clock)
             data_out <= data_internal[15:8];
             write_state = 0;
         end
+
 
 parallel_txrx parallel_txrx(.clock(RP_clock), .chip_select(RP_CS),
                             .data_pins(RP_data), .data_in(data_in),

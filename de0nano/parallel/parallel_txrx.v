@@ -17,5 +17,4 @@ always @(negedge clock)
     else
         data_out_internal <= data_out;
 
-
 endmodule

@@ -10,24 +10,25 @@ module serial(
     input ACC_INTERRUPT
 );
 `include "parameters.h"
-parameter VALUE = 42435;
 wire RxD_data_ready;
 reg TxD_data_ready;
 wire [7:0] RxD_data;
 reg [7:0] TxD_data;
 wire TxD_busy;
-reg [2:0] TxD_state;
+reg [1:0] write_state;
 assign LED = {RxD_data, dimension, RxD_data_ready, TxD_busy};
-
+wire dly_rst;
+wire spi_clk, spi_clk_out;
 // data
 reg [1:0] dimension;
 wire [15:0] data;
 
 
 always @(posedge (TxD_busy | RxD_data_ready))
-    if(TxD_state == 0)
+    if(write_state == 0)
         begin
-            TxD_state = 1;
+            if(120 <= RxD_data <= 122)
+                write_state = 1;
             if(RxD_data == 120)
                 dimension = 0;
             else if(RxD_data == 121)
@@ -35,25 +36,25 @@ always @(posedge (TxD_busy | RxD_data_ready))
             else if(RxD_data == 122)
                 dimension = 2;
         end
-    else if(TxD_state == 3)
-        TxD_state = 0;
+    else if(write_state == 3)
+        write_state = 0;
     else
-        TxD_state = TxD_state + 1;
+        write_state = write_state + 1;
 
-always @(TxD_state)
+always @(write_state)
     if (~TxD_busy)
-        if(TxD_state == 1)
+        if(write_state == 1)
             begin
                 TxD_data_ready = 1'b1;
                 TxD_data <= data[7:0];
             end
 
-        else if(TxD_state == 2)
+        else if(write_state == 2)
             begin
                 TxD_data_ready = 1'b1;
                 TxD_data <= data[15:0];
             end
-        else if(TxD_state == 3)
+        else if(write_state == 3)
             begin
                 TxD_data_ready = 1'b0;
             end
@@ -68,7 +69,10 @@ async_receiver RX(.clk(CLK_50), .RxD(RxD), .RxD_data_ready(RxD_data_ready),
 async_transmitter TX(.clk(CLK_50), .TxD(TxD), .TxD_start(TxD_data_ready),
                      .TxD_data(TxD_data), .TxD_busy(TxD_busy));
 
-
+reset_delay	reset_delay	(
+            .iRSTN(KEY),
+            .iCLK(CLK_50),
+            .oRST(dly_rst));
 //  PLL
 spipll spipll(
             .areset(dly_rst),

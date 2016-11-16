@@ -1,4 +1,2 @@
-parameter BAUD_RATE1 = 460800;
-parameter BAUD_RATE2 = 115200;
-parameter BAUD_RATE  = 460800;//BAUD_RATE1;
+parameter BAUD_RATE  = 460800;
 parameter CLK_FREQUENCY = 50000000;
